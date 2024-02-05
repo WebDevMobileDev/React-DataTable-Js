@@ -12,6 +12,11 @@ table {
     color: #ffffff;
     text-align: left;
   }
+
+  table thead tr td:last-of-type {
+    padding-left: 30px;
+  }
+
   table th,
   table td {
     padding: 10px 15px;
@@ -26,3 +31,32 @@ table {
   table tbody tr:last-of-type {
     border-bottom: 2px solid #4bbd7f;
   }  
+
+ .searchTr td{ 
+    text-align: center;
+   }
+  
+   .searchbar { 
+    background-color: rgb(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 5px;
+    font-weight: bolder;
+    width: 98%;
+    border-radius: 5px;
+    border: 1px solid white;
+   }
+  
+   .searchbar:focus{
+    outline: none;
+   }
+  
+   .searchbar::placeholder{
+    color: white;
+   }
+   
+ .paginate-span:hover {
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+    color: #dddddd;
+   }
