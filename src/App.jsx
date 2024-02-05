@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <div>
+      <div className='app'>
         <h1>My Custom React DataTable </h1>
         <DataTable />
       </div>
