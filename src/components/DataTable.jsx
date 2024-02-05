@@ -16,6 +16,11 @@ import Select from '@mui/material/Select';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';  
 import './table.css'
 import { Block } from '@mui/icons-material';
 
@@ -49,6 +54,7 @@ const DataTable = () => {
   const [currentID, setCurrentId] = useState(0);
   const [open, setOpen] = useState('false');
   const [query, setQuery] = useState("")
+  const [filter, setFilter] = useState("id");
 
   const handleOpen = (value) => setOpen(value);
   const handleClose = () => setOpen('false');
@@ -155,7 +161,7 @@ const DataTable = () => {
   )
 
   const filterButton = (
-    <span><FilterListIcon /></span>
+    <span  onClick={() => handleOpen("FilterModal")}><FilterListIcon /></span>
   )
 
 
@@ -204,6 +210,24 @@ const DataTable = () => {
       callback(id)
     }
   }
+
+  const FilterByKey = (array) => {
+    return array.sort((a, b) => {
+      if (filter === 'name' || filter === "matricule" || filter === "gender") {
+        return a[filter].localeCompare(b[filter]);
+      }
+      else if (filter === "id") {
+        return a.id - b.id;
+      } 
+      else if (filter === "age") {
+        return a.age - b.age;
+      } else {
+        return a.level - b.level
+      }
+    });
+  }
+
+
   const createBodyTr = (student) => {
     return (
       <tr key={student.id} data-id={student.id}>
@@ -239,7 +263,7 @@ const DataTable = () => {
           </tr>
         </thead>
         <tbody>
-          {students && students.filter((student) => {
+          {students && FilterByKey(students).filter((student) => {
             if (student.name.toLowerCase().includes(query) || student.matricule.toLowerCase().includes(query))
               return student
           }).map(student => (
@@ -507,7 +531,83 @@ const DataTable = () => {
           </Box>
         </Box>
       </Modal>
-
+    {/* the filtering modal goes here */}
+    <Modal
+        open={open === "FilterModal"}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Filter by:
+          </Typography>
+          <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            <nav aria-label="main mailbox folders">
+              <List>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => {
+                    setFilter("name")
+                    handleClose()
+                  }}>
+                    <ListItemText primary="Name" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => {
+                    setFilter("matricule")
+                    handleClose()
+                  }}>
+                    <ListItemText primary="Matricule" />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </nav>
+            <Divider />
+            <nav aria-label="secondary mailbox folders">
+              <List>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => {
+                    setFilter("age")
+                    handleClose()
+                  }}>
+                    <ListItemText primary="Age" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => {
+                    setFilter("level")
+                    handleClose()
+                  }}>
+                    <ListItemText primary="Level" />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => {
+                    setFilter("gender")
+                    handleClose()
+                  }}>
+                    <ListItemText primary="Gender" />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </nav>
+            <Divider />
+            <nav aria-label="tetiary mailbox folders">
+              <List>
+                <ListItem disablePadding>
+                  <ListItemButton onClick={() => {
+                    setFilter("id")
+                    handleClose()
+                  }}>
+                    <ListItemText primary="Disable" />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </nav>
+          </Box>
+        </Box>
+      </Modal>
     </div>
   )
 }
