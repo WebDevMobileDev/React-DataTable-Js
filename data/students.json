@@ -74,17 +74,17 @@
     },
     {
       "id": 10,
-      "name": "James Smith",
+      "name": "James Bourne",
       "matricule": "QR10J239",
       "age": 20,
       "gender": "male",
       "level": 4
     },
     {
-      "name": "Peter Rabit ",
-      "matricule": "sfasdfasdf",
-      "age": 17,
-      "level": 2,
+      "name": "Bananas",
+      "matricule": "asdfasdf",
+      "age": 15,
+      "level": 1,
       "gender": "male",
       "id": 11
     }
