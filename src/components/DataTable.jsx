@@ -45,9 +45,10 @@ const DataTable = () => {
   //states
   const [students, setStudents] = useState([]);
   const [studentToAdd, setStudentToAdd] = useState({ name: "", matricule: "", level: 1, gender: "male", age: 15 });
-  const [studentToEdit, setStudentToEdit] = useState({id:0, name: "", matricule: "", level: 1, gender: "male", age: 15 });
+  const [studentToEdit, setStudentToEdit] = useState({ id: 0, name: "", matricule: "", level: 1, gender: "male", age: 15 });
   const [currentID, setCurrentId] = useState(0);
   const [open, setOpen] = useState('false');
+  const [query, setQuery] = useState("")
 
   const handleOpen = (value) => setOpen(value);
   const handleClose = () => setOpen('false');
@@ -191,15 +192,15 @@ const DataTable = () => {
     }
 
     if (parentId && callback) {
-      const id = parentId; 
+      const id = parentId;
       console.log("this is the id", id)
       let foundStudent
       students.forEach(student => {
         if (student.id == id) {
-         foundStudent = student
+          foundStudent = student
         }
-      }) 
-      setStudentToEdit(foundStudent ? foundStudent : studentToEdit) 
+      })
+      setStudentToEdit(foundStudent ? foundStudent : studentToEdit)
       callback(id)
     }
   }
@@ -238,7 +239,10 @@ const DataTable = () => {
           </tr>
         </thead>
         <tbody>
-          {students && students.map((student) => (
+          {students && students.filter((student) => {
+            if (student.name.toLowerCase().includes(query) || student.matricule.toLowerCase().includes(query))
+              return student
+          }).map(student => (
             createBodyTr(student)
           ))}
           <tr>
@@ -382,7 +386,7 @@ const DataTable = () => {
 
           <form noValidate autoComplete='off'>
             <TextField label="name" value={studentToEdit?.name}
-              variant='standard' sx={{ marginBottom: "10px", display:"block" }}
+              variant='standard' sx={{ marginBottom: "10px", display: "block" }}
               onChange={(e) => {
                 setStudentToEdit({
                   name: e.target.value,
@@ -408,7 +412,7 @@ const DataTable = () => {
             />
 
             <TextField label="age" value={studentToEdit?.age}
-              variant='standard' type='number' sx={{ marginBottom: "10px", display:"block" }}
+              variant='standard' type='number' sx={{ marginBottom: "10px", display: "block" }}
               onChange={(e) => {
                 setStudentToEdit({
                   name: studentToEdit.name,
