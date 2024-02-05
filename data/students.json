@@ -1,84 +1,92 @@
 {
-    "students": [
-        {
-            "id": 1,
-            "name": "John Doe",
-            "matricule": "FE21A758",
-            "age": 16,
-            "gender": "male",
-            "level": 1
-          },
-          {
-            "id": 2,
-            "name": "Jane Smith",
-            "matricule": "AB32C491",
-            "age": 17,
-            "gender": "female",
-            "level": 3
-          },
-          {
-            "id": 3,
-            "name": "Alice Johnson",
-            "matricule": "CD43B582",
-            "age": 18,
-            "gender": "female",
-            "level": 4
-          },
-          {
-            "id": 4,
-            "name": "Bob Brown",
-            "matricule": "EF54D673",
-            "age": 17,
-            "gender": "male",
-            "level": 1
-          },
-          {
-            "id": 5,
-            "name": "Emma Lee",
-            "matricule": "GH65E764",
-            "age": 18,
-            "gender": "female",
-            "level": 2
-          },
-          {
-            "id": 6,
-            "name": "David Johnson",
-            "matricule": "IJ76F845",
-            "age": 19,
-            "gender": "male",
-            "level": 2
-          },
-          {
-            "id": 7,
-            "name": "Sarah Wilson",
-            "matricule": "KL87G926",
-            "age": 16,
-            "gender": "female",
-            "level": 1
-          },
-          {
-            "id": 8,
-            "name": "Michael Brown",
-            "matricule": "MN98H017",
-            "age": 17,
-            "gender": "male",
-            "level": 2
-          },
-          {
-            "id": 9,
-            "name": "Olivia Garcia",
-            "matricule": "OP09I128",
-            "age": 17,
-            "gender": "female",
-            "level": 3
-          },
-          {
-            "id": 10,
-            "name": "James Smith",
-            "matricule": "QR10J239",
-            "age": 20,
-            "gender": "male",
-            "level": 4
-          }
-    ]
+  "students": [
+    {
+      "id": 1,
+      "name": "John Doe",
+      "matricule": "FE21A758",
+      "age": 16,
+      "gender": "male",
+      "level": 1
+    },
+    {
+      "id": 2,
+      "name": "Jane Smith",
+      "matricule": "AB32C491",
+      "age": 17,
+      "gender": "female",
+      "level": 3
+    },
+    {
+      "id": 3,
+      "name": "Alice Johnson",
+      "matricule": "CD43B582",
+      "age": 18,
+      "gender": "female",
+      "level": 4
+    },
+    {
+      "id": 4,
+      "name": "Bob Brown",
+      "matricule": "EF54D673",
+      "age": 17,
+      "gender": "male",
+      "level": 1
+    },
+    {
+      "id": 5,
+      "name": "Emma Lee",
+      "matricule": "GH65E764",
+      "age": 18,
+      "gender": "female",
+      "level": 2
+    },
+    {
+      "id": 6,
+      "name": "David Johnson",
+      "matricule": "IJ76F845",
+      "age": 19,
+      "gender": "male",
+      "level": 2
+    },
+    {
+      "id": 7,
+      "name": "Sarah Wilson",
+      "matricule": "KL87G926",
+      "age": 16,
+      "gender": "female",
+      "level": 1
+    },
+    {
+      "id": 8,
+      "name": "Michael Brown",
+      "matricule": "MN98H017",
+      "age": 17,
+      "gender": "male",
+      "level": 2
+    },
+    {
+      "id": 9,
+      "name": "Olivia Garcia",
+      "matricule": "OP09I128",
+      "age": 17,
+      "gender": "female",
+      "level": 3
+    },
+    {
+      "id": 10,
+      "name": "James Smith",
+      "matricule": "QR10J239",
+      "age": 20,
+      "gender": "male",
+      "level": 4
+    },
+    {
+      "name": "Peter Rabit ",
+      "matricule": "sfasdfasdf",
+      "age": 17,
+      "level": 2,
+      "gender": "male",
+      "id": 11
+    }
+  ]
 }
