@@ -55,6 +55,8 @@ const DataTable = () => {
   const [open, setOpen] = useState('false');
   const [query, setQuery] = useState("")
   const [filter, setFilter] = useState("id");
+  const [pageIndex, setPageIndex] = useState(1);
+  const [numOfRecords, setNumOfRecords] = useState(5);
 
   const handleOpen = (value) => setOpen(value);
   const handleClose = () => setOpen('false');
@@ -227,6 +229,11 @@ const DataTable = () => {
     });
   }
 
+  //function for pagination
+  const paginate = () => {
+    const pageStudents = students.slice((pageIndex - 1) * numOfRecords, ((pageIndex - 1) * numOfRecords) + numOfRecords)
+    return pageStudents
+  }
 
   const createBodyTr = (student) => {
     return (
@@ -263,25 +270,63 @@ const DataTable = () => {
           </tr>
         </thead>
         <tbody>
-          {students && FilterByKey(students).filter((student) => {
+          {students && FilterByKey(paginate()).filter((student) => {
             if (student.name.toLowerCase().includes(query) || student.matricule.toLowerCase().includes(query))
               return student
           }).map(student => (
             createBodyTr(student)
           ))}
           <tr>
-            <td></td><td></td><td></td><td></td><td></td><td></td>
+            <td></td><td></td><td></td><td></td><td></td>
+            <td style={{display: "flex", alignItems:"center"}}>
+             <span style={{paddingBottom:"15%"}}>rows</span>
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "inline", marginBottom: "30px" }}>
+              <Select
+                labelId="demo-simple-select-standard-label"
+                id="demo-simple-select-standard"
+                value={numOfRecords}
+                onChange={(e) => { 
+                  setNumOfRecords(e.target.value)
+                }}
+                label="gender"
+              >
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={2}>2</MenuItem>
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={4}>4</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+              </Select>
+            </FormControl>
+            </td>
             <td>
-              <span className='paginate-span'>
+              <span className='paginate-span' onClick={() => {
+                setPageIndex(1) 
+              }}>
                 <KeyboardDoubleArrowLeftIcon />
               </span>
-              <span className='paginate-span'>
+              <span className='paginate-span' onClick={() => {
+                  pageIndex === 1
+                    ? paginate()
+                    : (
+                      setPageIndex(pageIndex - 1),
+                      paginate()
+                    );
+                }}>
                 <KeyboardArrowLeftIcon />
               </span>
-              <span className='paginate-span'>
+              <span className='paginate-span' onClick={() => {
+                  pageIndex === students.length / numOfRecords
+                    ? paginate()
+                    : (
+                      setPageIndex(pageIndex + 1),
+                      paginate()
+                    );
+                }}>
                 <KeyboardArrowRightIcon />
               </span>
-              <span className='paginate-span'>
+              <span className='paginate-span' onClick={() => {
+                setPageIndex(students.length/numOfRecords) 
+              }}>
                 <KeyboardDoubleArrowRightIcon />
               </span>
             </td>
