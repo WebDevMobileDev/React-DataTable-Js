@@ -20,7 +20,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';  
+import Divider from '@mui/material/Divider';
 import './table.css'
 import { Block } from '@mui/icons-material';
 
@@ -54,9 +54,11 @@ const DataTable = () => {
   const [currentID, setCurrentId] = useState(0);
   const [open, setOpen] = useState('false');
   const [query, setQuery] = useState("")
-  const [filter, setFilter] = useState("id");
+  const [sortKey, setSortKey] = useState({ key: "id", order: 'asc' });
   const [pageIndex, setPageIndex] = useState(1);
   const [numOfRecords, setNumOfRecords] = useState(5);
+  const [dataLength, setDataLength] = useState(1)
+  const [searchedData, setSearchedData] = useState([])
 
   const handleOpen = (value) => setOpen(value);
   const handleClose = () => setOpen('false');
@@ -89,7 +91,7 @@ const DataTable = () => {
   }
 
   const handleEditRow = async (id) => {
-     fetch('http://localhost:8000/students/' + id, {
+    fetch('http://localhost:8000/students/' + id, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -109,7 +111,7 @@ const DataTable = () => {
       let s = students.find(student => student.id === data.id)
       console.log(s)
       let i = students.indexOf(s);
-      students.splice(i,1,data);
+      students.splice(i, 1, data);
     }).catch(err => {
       console.log(err)
     })
@@ -166,8 +168,8 @@ const DataTable = () => {
       } />
   )
 
-  const filterButton = (
-    <span  onClick={() => handleOpen("FilterModal")}><FilterListIcon /></span>
+  const sortButton = (
+    <span onClick={() => handleOpen("SortModal")}><FilterListIcon /></span>
   )
 
 
@@ -217,26 +219,54 @@ const DataTable = () => {
     }
   }
 
-  const FilterByKey = (array) => {
-    return array.sort((a, b) => {
-      if (filter === 'name' || filter === "matricule" || filter === "gender") {
-        return a[filter].localeCompare(b[filter]);
-      }
-      else if (filter === "id") {
-        return a.id - b.id;
-      } 
-      else if (filter === "age") {
-        return a.age - b.age;
-      } else {
-        return a.level - b.level
-      }
-    });
+  const searchFunction = (dataList, query) => {
+    return dataList.filter((student) => {
+      if (student.name.toLowerCase().includes(query) || student.matricule.toLowerCase().includes(query))
+        return student
+    })
+  }
+
+  useEffect(() => {
+    setSearchedData(searchFunction(students, query))
+    setDataLength(searchedData.length)
+  }, [students, query])
+
+  const SortByKey = (array) => {
+    switch (sortKey.order) {
+      case "asc":
+        return array.sort((a, b) => {
+          if (sortKey.key === 'name' || sortKey.key === "matricule" || sortKey.key === "gender") {
+            return a[sortKey.key].localeCompare(b[sortKey.key]);
+          }
+          else if (sortKey.key === "id") {
+            return a.id - b.id;
+          }
+          else if (sortKey.key === "age") {
+            return a.age - b.age;
+          } else {
+            return a.level - b.level
+          }
+        });
+      case "dsc":
+        return array.sort((a, b) => {
+          if (sortKey.key === 'name' || sortKey.key === "matricule" || sortKey.key === "gender") {
+            return b[sortKey.key].localeCompare(a[sortKey.key]);
+          }
+          else if (sortKey.key === "id") {
+            return b.id - a.id;
+          }
+          else if (sortKey.key === "age") {
+            return b.age - a.age;
+          } else {
+            return b.level - a.level
+          }
+        });
+    }
   }
 
   //function for pagination
-  const paginate = () => {
-    const pageStudents = students.slice((pageIndex - 1) * numOfRecords, ((pageIndex - 1) * numOfRecords) + numOfRecords)
-    return pageStudents
+  const paginate = (dataList) => {
+    return dataList.slice((pageIndex - 1) * numOfRecords, ((pageIndex - 1) * numOfRecords) + numOfRecords)
   }
 
   const createBodyTr = (student) => {
@@ -265,7 +295,7 @@ const DataTable = () => {
           <tr className='searchTr'>
             <td></td><td></td><td></td><td></td><td></td>
             <td>{SearchBar}</td>
-            <td style={{ textAlign: "left" }}>{filterButton}</td>
+            <td style={{ textAlign: "left" }}>{sortButton}</td>
           </tr>
           <tr>
             {columns.map((column) => (
@@ -274,63 +304,54 @@ const DataTable = () => {
           </tr>
         </thead>
         <tbody>
-          {students && FilterByKey(paginate()).filter((student) => {
-            if (student.name.toLowerCase().includes(query) || student.matricule.toLowerCase().includes(query))
-              return student
-          }).map(student => (
+          {students && paginate(SortByKey(searchedData)).map(student => (
             createBodyTr(student)
           ))}
           <tr>
-            <td></td><td></td><td></td><td></td><td></td>
-            <td style={{display: "flex", alignItems:"center"}}>
-             <span style={{paddingBottom:"15%"}}>rows</span>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "inline", marginBottom: "30px" }}>
-              <Select
-                labelId="demo-simple-select-standard-label"
-                id="demo-simple-select-standard"
-                value={numOfRecords}
-                onChange={(e) => { 
-                  setNumOfRecords(e.target.value)
-                }}
-                label="gender"
-              >
-                <MenuItem value={1}>1</MenuItem>
-                <MenuItem value={2}>2</MenuItem>
-                <MenuItem value={3}>3</MenuItem>
-                <MenuItem value={4}>4</MenuItem>
-                <MenuItem value={5}>5</MenuItem>
-                <MenuItem value={10}>10</MenuItem>
-              </Select>
-            </FormControl>
+            <td></td><td></td><td></td><td></td>
+            <td>
+              <span style={{ border: "1px solid black", borderRadius: "5px", padding: "5px" }}>{`page ${pageIndex} of ${Math.ceil(dataLength / numOfRecords)}`}</span>
+            </td>
+            <td style={{ display: "flex", alignItems: "center" }}>
+              <span style={{ paddingBottom: "15%" }}>rows</span>
+              <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "inline", marginBottom: "30px" }}>
+                <Select
+                  labelId="demo-simple-select-standard-label"
+                  id="demo-simple-select-standard"
+                  value={numOfRecords}
+                  onChange={(e) => {
+                    setPageIndex(1)
+                    setNumOfRecords(e.target.value)
+                  }}
+                  label="gender"
+                >
+                  <MenuItem value={1}>1</MenuItem>
+                  <MenuItem value={2}>2</MenuItem>
+                  <MenuItem value={3}>3</MenuItem>
+                  <MenuItem value={4}>4</MenuItem>
+                  <MenuItem value={5}>5</MenuItem>
+                  <MenuItem value={10}>10</MenuItem>
+                </Select>
+              </FormControl>
             </td>
             <td>
               <span className='paginate-span' onClick={() => {
-                setPageIndex(1) 
+                setPageIndex(1)
               }}>
                 <KeyboardDoubleArrowLeftIcon />
               </span>
               <span className='paginate-span' onClick={() => {
-                  pageIndex === 1
-                    ? paginate()
-                    : (
-                      setPageIndex(pageIndex - 1),
-                      paginate()
-                    );
-                }}>
+                pageIndex === 1 ? setPageIndex(1) : (setPageIndex(pageIndex - 1));
+              }}>
                 <KeyboardArrowLeftIcon />
               </span>
               <span className='paginate-span' onClick={() => {
-                  pageIndex === students.length / numOfRecords
-                    ? paginate()
-                    : (
-                      setPageIndex(pageIndex + 1),
-                      paginate()
-                    );
-                }}>
+                pageIndex === Math.ceil(dataLength / numOfRecords) ? setPageIndex(Math.ceil(dataLength / numOfRecords)) : (setPageIndex(pageIndex + 1));
+              }}>
                 <KeyboardArrowRightIcon />
               </span>
               <span className='paginate-span' onClick={() => {
-                setPageIndex(students.length/numOfRecords) 
+                setPageIndex(Math.ceil(dataLength / numOfRecords))
               }}>
                 <KeyboardDoubleArrowRightIcon />
               </span>
@@ -581,23 +602,23 @@ const DataTable = () => {
           </Box>
         </Box>
       </Modal>
-    {/* the filtering modal goes here */}
-    <Modal
-        open={open === "FilterModal"}
+      {/* the sorting modal goes here */}
+      <Modal
+        open={open === "SortModal"}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Filter by:
+            Sort by:
           </Typography>
           <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
             <nav aria-label="main mailbox folders">
               <List>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("name")
+                    setSortKey({ key: "name", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Name" />
@@ -605,7 +626,7 @@ const DataTable = () => {
                 </ListItem>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("matricule")
+                    setSortKey({ key: "matricule", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Matricule" />
@@ -618,7 +639,7 @@ const DataTable = () => {
               <List>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("age")
+                    setSortKey({ key: "age", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Age" />
@@ -626,7 +647,7 @@ const DataTable = () => {
                 </ListItem>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("level")
+                    setSortKey({ key: "level", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Level" />
@@ -634,7 +655,7 @@ const DataTable = () => {
                 </ListItem>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("gender")
+                    setSortKey({ key: "gender", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Gender" />
@@ -646,8 +667,26 @@ const DataTable = () => {
             <nav aria-label="tetiary mailbox folders">
               <List>
                 <ListItem disablePadding>
+                  <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "block" }}>
+                    <span style={{ marginRight: "8px" }}>Order:</span>
+                    <Select
+                      labelId="demo-simple-select-standard-label"
+                      id="demo-simple-select-standard"
+                      value={sortKey.order}
+                      onChange={(e) => {
+                        let oldKey = sortKey.key
+                        setSortKey({ key: oldKey, order: e.target.value })
+                      }}
+                      label="Age"
+                    >
+                      <MenuItem value={"asc"}>asc</MenuItem>
+                      <MenuItem value={"dsc"}>dsc</MenuItem>
+                    </Select>
+                  </FormControl>
+                </ListItem>
+                <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("id")
+                    setSortKey({ key: "id", order: "asc" })
                     handleClose()
                   }}>
                     <ListItemText primary="Disable" />
