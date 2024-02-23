@@ -20,7 +20,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import Divider from '@mui/material/Divider';  
+import Divider from '@mui/material/Divider';
 import './table.css'
 import { Block } from '@mui/icons-material';
 
@@ -54,7 +54,7 @@ const DataTable = () => {
   const [currentID, setCurrentId] = useState(0);
   const [open, setOpen] = useState('false');
   const [query, setQuery] = useState("")
-  const [filter, setFilter] = useState("id");
+  const [sortKey, setSortKey] = useState({ key: "id", order: 'asc' });
 
   const handleOpen = (value) => setOpen(value);
   const handleClose = () => setOpen('false');
@@ -160,8 +160,8 @@ const DataTable = () => {
       } />
   )
 
-  const filterButton = (
-    <span  onClick={() => handleOpen("FilterModal")}><FilterListIcon /></span>
+  const sortButton = (
+    <span onClick={() => handleOpen("SortModal")}><FilterListIcon /></span>
   )
 
 
@@ -211,20 +211,37 @@ const DataTable = () => {
     }
   }
 
-  const FilterByKey = (array) => {
-    return array.sort((a, b) => {
-      if (filter === 'name' || filter === "matricule" || filter === "gender") {
-        return a[filter].localeCompare(b[filter]);
-      }
-      else if (filter === "id") {
-        return a.id - b.id;
-      } 
-      else if (filter === "age") {
-        return a.age - b.age;
-      } else {
-        return a.level - b.level
-      }
-    });
+  const SortByKey = (array) => {
+    switch (sortKey.order) {
+      case "asc":
+        return array.sort((a, b) => {
+          if (sortKey.key === 'name' || sortKey.key === "matricule" || sortKey.key === "gender") {
+            return a[sortKey.key].localeCompare(b[sortKey.key]);
+          }
+          else if (sortKey.key === "id") {
+            return a.id - b.id;
+          }
+          else if (sortKey.key === "age") {
+            return a.age - b.age;
+          } else {
+            return a.level - b.level
+          }
+        });
+      case "dsc":
+        return array.sort((a, b) => {
+          if (sortKey.key === 'name' || sortKey.key === "matricule" || sortKey.key === "gender") {
+            return b[sortKey.key].localeCompare(a[sortKey.key]);
+          }
+          else if (sortKey.key === "id") {
+            return b.id - a.id;
+          }
+          else if (sortKey.key === "age") {
+            return b.age - a.age;
+          } else {
+            return b.level - a.level
+          }
+        });
+    }
   }
 
 
@@ -254,7 +271,7 @@ const DataTable = () => {
           <tr className='searchTr'>
             <td></td><td></td><td></td><td></td><td></td>
             <td>{SearchBar}</td>
-            <td style={{ textAlign: "left" }}>{filterButton}</td>
+            <td style={{ textAlign: "left" }}>{sortButton}</td>
           </tr>
           <tr>
             {columns.map((column) => (
@@ -263,7 +280,7 @@ const DataTable = () => {
           </tr>
         </thead>
         <tbody>
-          {students && FilterByKey(students).filter((student) => {
+          {students && SortByKey(students).filter((student) => {
             if (student.name.toLowerCase().includes(query) || student.matricule.toLowerCase().includes(query))
               return student
           }).map(student => (
@@ -531,23 +548,23 @@ const DataTable = () => {
           </Box>
         </Box>
       </Modal>
-    {/* the filtering modal goes here */}
-    <Modal
-        open={open === "FilterModal"}
+      {/* the sorting modal goes here */}
+      <Modal
+        open={open === "SortModal"}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Filter by:
+            Sort by:
           </Typography>
           <Box sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
             <nav aria-label="main mailbox folders">
               <List>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("name")
+                    setSortKey({ key: "name", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Name" />
@@ -555,7 +572,7 @@ const DataTable = () => {
                 </ListItem>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("matricule")
+                    setSortKey({ key: "matricule", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Matricule" />
@@ -568,7 +585,7 @@ const DataTable = () => {
               <List>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("age")
+                    setSortKey({ key: "age", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Age" />
@@ -576,7 +593,7 @@ const DataTable = () => {
                 </ListItem>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("level")
+                    setSortKey({ key: "level", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Level" />
@@ -584,7 +601,7 @@ const DataTable = () => {
                 </ListItem>
                 <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("gender")
+                    setSortKey({ key: "gender", order: sortKey.order })
                     handleClose()
                   }}>
                     <ListItemText primary="Gender" />
@@ -596,8 +613,26 @@ const DataTable = () => {
             <nav aria-label="tetiary mailbox folders">
               <List>
                 <ListItem disablePadding>
+                  <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "block"}}>
+                    <span style={{marginRight: "8px"}}>Order:</span>
+                    <Select
+                      labelId="demo-simple-select-standard-label"
+                      id="demo-simple-select-standard"
+                      value={sortKey.order}
+                      onChange={(e) => {
+                        let oldKey = sortKey.key
+                        setSortKey({ key: oldKey, order: e.target.value })
+                      }}
+                      label="Age"
+                    >
+                      <MenuItem value={"asc"}>asc</MenuItem>
+                      <MenuItem value={"dsc"}>dsc</MenuItem>
+                    </Select>
+                  </FormControl>
+                </ListItem>
+                <ListItem disablePadding>
                   <ListItemButton onClick={() => {
-                    setFilter("id")
+                    setSortKey({ key: "id", order: "asc" })
                     handleClose()
                   }}>
                     <ListItemText primary="Disable" />
