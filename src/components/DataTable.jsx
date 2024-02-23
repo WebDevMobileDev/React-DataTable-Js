@@ -89,7 +89,7 @@ const DataTable = () => {
   }
 
   const handleEditRow = async (id) => {
-    await fetch('http://localhost:8000/students/' + id, {
+     fetch('http://localhost:8000/students/' + id, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -105,7 +105,11 @@ const DataTable = () => {
     }).then(data => {
       console.log(data)
       alert("successsful")
-      location.reload()
+      handleClose()
+      let s = students.find(student => student.id === data.id)
+      console.log(s)
+      let i = students.indexOf(s);
+      students.splice(i,1,data);
     }).catch(err => {
       console.log(err)
     })
@@ -295,6 +299,7 @@ const DataTable = () => {
                 <MenuItem value={3}>3</MenuItem>
                 <MenuItem value={4}>4</MenuItem>
                 <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
               </Select>
             </FormControl>
             </td>

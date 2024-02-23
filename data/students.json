@@ -1,48 +1,16 @@
 {
   "students": [
     {
-      "id": 1,
-      "name": "John Doe",
-      "matricule": "FE21A758",
-      "age": 16,
-      "gender": "male",
-      "level": 1
-    },
-    {
-      "id": 2,
-      "name": "Jane Smith",
-      "matricule": "AB32C491",
-      "age": 17,
-      "gender": "female",
-      "level": 3
-    },
-    {
-      "id": 3,
-      "name": "Alice Johnson",
-      "matricule": "CD43B582",
-      "age": 18,
-      "gender": "female",
-      "level": 4
-    },
-    {
       "id": 4,
-      "name": "Bob Brown",
+      "name": "Bob marley",
       "matricule": "EF54D673",
       "age": 17,
       "gender": "male",
       "level": 1
     },
     {
-      "id": 5,
-      "name": "Emma Lee",
-      "matricule": "GH65E764",
-      "age": 18,
-      "gender": "female",
-      "level": 2
-    },
-    {
       "id": 6,
-      "name": "David Johnson",
+      "name": "loid forger",
       "matricule": "IJ76F845",
       "age": 19,
       "gender": "male",
@@ -50,7 +18,7 @@
     },
     {
       "id": 7,
-      "name": "Sarah Wilson",
+      "name": "Sarah Wilsoner",
       "matricule": "KL87G926",
       "age": 16,
       "gender": "female",
@@ -71,22 +39,6 @@
       "age": 17,
       "gender": "female",
       "level": 3
-    },
-    {
-      "id": 10,
-      "name": "James Bourne",
-      "matricule": "QR10J239",
-      "age": 20,
-      "gender": "male",
-      "level": 4
-    },
-    {
-      "name": "Bananas",
-      "matricule": "asdfasdf",
-      "age": 15,
-      "level": 1,
-      "gender": "male",
-      "id": 11
     }
   ]
 }
