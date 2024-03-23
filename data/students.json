@@ -1,12 +1,45 @@
 {
   "students": [
     {
+      "id": 1,
+      "name": "Brenda Johnes",
+      "matricule": "PO02A108",
+      "age": 19,
+      "gender": "female",
+      "level": 1
+    },
+ {
+      "id": 2,
+      "name": "Mike Janvier",
+      "matricule": "UI89Y290",
+      "age": 19,
+      "gender": "male",
+      "level": 4
+    },
+ {
+      "id": 3,
+      "name": "Karen Smith",
+      "matricule": "AR90F544",
+      "age": 18,
+      "gender": "female",
+      "level": 2
+    },
+    {
       "id": 4,
       "name": "Bob marley",
       "matricule": "EF54D673",
       "age": 17,
       "gender": "male",
       "level": 1
+    },
+    
+    {
+      "id": 5,
+      "name": "Emma Lee",
+      "matricule": "GH65E764",
+      "age": 18,
+      "gender": "female",
+      "level": 2
     },
     {
       "id": 6,
@@ -39,6 +72,86 @@
       "age": 17,
       "gender": "female",
       "level": 3
+    }, 
+ {
+      "id": 10,
+      "name": "Erica Miller",
+      "matricule": "FE12H231",
+      "age": 17,
+      "gender": "female",
+      "level": 4
+    },{
+      "id": 11,
+      "name": "Peter Rabit",
+      "matricule": "ER99F535",
+      "age": 18,
+      "gender": "male",
+      "level": 3
+    },{
+      "id": 12,
+      "name": "Renner Albert",
+      "matricule": "TI12H786",
+      "age": 19,
+      "gender": "male",
+      "level": 1
+    },{
+      "id": 13,
+      "name": "Paul Carer",
+      "matricule": "NV12T177",
+      "age": 18,
+      "gender": "male",
+      "level": 3
+    },{
+      "id": 14,
+      "name": "Sabrina Peach",
+      "matricule": "TY80B267",
+      "age": 17,
+      "gender": "female",
+      "level": 2
+    },{
+      "id": 15,
+      "name": "Jean Frost",
+      "matricule": "FA11C222",
+      "age": 18,
+      "gender": "female",
+      "level": 4
+    },{
+      "id": 16,
+      "name": "Kelly Meyer",
+      "matricule": "QE43W271",
+      "age": 17,
+      "gender": "female",
+      "level": 4
+    },{
+      "id": 17,
+      "name": "Rick Morel",
+      "matricule": "FP12L201",
+      "age": 17,
+      "gender": "male",
+      "level": 3
+    },{
+      "id": 18,
+      "name": "Bard Drexler",
+      "matricule": "ME10H282",
+      "age": 20,
+      "gender": "male",
+      "level": 4
+    },{
+      "id": 19,
+      "name": "Jack Trainer",
+      "matricule": "KF15Z241",
+      "age": 17,
+      "gender": "male",
+      "level": 1
+    },{
+      "id": 20,
+      "name": "Caren Bold",
+      "matricule": "SA33R111",
+      "age": 17,
+      "gender": "female",
+      "level": 2
     }
   ]
 }
+
+ 

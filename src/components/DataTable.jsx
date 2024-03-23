@@ -23,6 +23,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import './table.css'
 import { Block } from '@mui/icons-material';
+import Menu from '@mui/material/Menu';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 
 const iconStyles = {
   borderRadius: "50%",
@@ -47,7 +52,23 @@ const style = {
 
 
 const DataTable = () => {
-  //states
+
+  const columns = [
+    { key: "id", component: "Id" },
+    { key: "name", component: "Name" },
+    { key: "matricule", component: "Matricule" },
+    { key: "age", component: "Age" },
+    { key: "gender", component: "Gender" },
+    { key: "level", component: "Level" }
+  ]
+
+  const adjustedColumns = [...columns, { key: "actions", component: " " }];
+
+  const colsToDisplay = adjustedColumns.map((col) => {
+    return { ...col, selected: true }
+  })
+
+  //states-------------------------------------------------------
   const [students, setStudents] = useState([]);
   const [studentToAdd, setStudentToAdd] = useState({ name: "", matricule: "", level: 1, gender: "male", age: 15 });
   const [studentToEdit, setStudentToEdit] = useState({ id: 0, name: "", matricule: "", level: 1, gender: "male", age: 15 });
@@ -63,6 +84,89 @@ const DataTable = () => {
   const handleOpen = (value) => setOpen(value);
   const handleClose = () => setOpen('false');
 
+
+  const [tableColumns, setTableColumns] = useState(colsToDisplay) //selected and non-selected columns
+  const [tableColumnsDisplaying, setTableColumnsDisplaying] = useState(colsToDisplay) //keep track of selected cols 
+
+
+
+  //states for the column menu 
+  const [anchorEl, setAnchorEl] = useState(null);
+  const openMenu = Boolean(anchorEl);
+  const handleClickMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+
+
+  const setNewTableColumnsDisplaying = (cols) => {
+    setTableColumnsDisplaying(cols.filter(col => { return col.selected === true }))
+  }
+  //function that removes all the columns with select field of false so that in the createHeader and createTr we don't get these columns 
+  const handleChangeColCheckbox = (event) => {
+
+    console.log(event.target);
+    console.log(tableColumns);
+    const newTableColumns = tableColumns.map(col => {
+      return col.key == event.target.name ? { ...col, selected: !col.selected } : col
+    })
+    //setting the table columns to keep keeping track of the selected and non selected rows
+    setTableColumns(newTableColumns)
+    setNewTableColumnsDisplaying(newTableColumns)
+
+  };
+
+  // handling resizing of the table 
+  useEffect(() => {
+    window.onload = function () {
+      const resizableColumns = document.querySelectorAll('th, td');
+
+      let startX;
+      let startWidth;
+
+      resizableColumns.forEach(column => {
+        column.addEventListener('mousemove', function (event) {
+          const rect = this.getBoundingClientRect();
+          const offset = 8; // Adjust this value as needed
+
+          // if (event.pageX < rect.left + offset || event.pageX > rect.right - offset) {
+          if (event.pageX > rect.right - offset) {
+            this.style.cursor = 'col-resize';
+          } else {
+            this.style.cursor = 'auto';
+          }
+        });
+
+        column.addEventListener('mousedown', function (event) {
+          const rect = this.getBoundingClientRect();
+          const offset = 8; // Adjust this value as needed
+
+          if (event.pageX > rect.right - offset) {
+            startX = event.pageX;
+            startWidth = this.offsetWidth;
+            const columnToResize = this;
+
+            function cellResize(event) {
+              const width = startWidth + (event.pageX - startX);
+              columnToResize.style.width = width + 'px';
+            }
+
+            document.addEventListener('mousemove', cellResize);
+
+            document.addEventListener('mouseup', function removeEventListener() {
+              document.removeEventListener('mousemove', cellResize);
+              document.removeEventListener('mouseup', removeEventListener);
+            });
+          }
+        });
+      });
+    };
+  })
+
+
   useEffect(() => {
     const fetchStudents = async () => {
       const response = await fetch("http://localhost:8000/students")
@@ -74,10 +178,10 @@ const DataTable = () => {
     }
 
     fetchStudents()
-  }, [])
+  }, [query])
 
 
-  //function to delete and to edit a row of data 
+  //function to delete and to edit a row of data------------------
   const onDeleteClick = (id) => {
     setCurrentId(id);
     console.log("deleting row with id: ", id)
@@ -154,8 +258,8 @@ const DataTable = () => {
   }
 
 
-  //custom components
-  const AddStudent = (
+  //custom components---------------------------------------------
+  const AddButton = (
     <span onClick={() => { handleOpen("AddModal") }}>
       <PlaylistAddIcon />
     </span>
@@ -172,17 +276,49 @@ const DataTable = () => {
     <span onClick={() => handleOpen("SortModal")}><FilterListIcon /></span>
   )
 
+  const columnView = (
+    <div>
+      <Button
+        id="basic-button"
+        aria-controls={openMenu ? 'basic-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={openMenu ? 'true' : undefined}
+        onClick={handleClickMenu}
+        sx={{ color: "white" }}
+      >
+        <ViewColumnIcon />
+      </Button>
+      <Menu
+        id="basic-menu"
+        anchorEl={anchorEl}
+        open={openMenu}
+        onClose={handleCloseMenu}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <MenuItem>
+          <FormGroup>
+            {tableColumns.map(col => (
+              <FormControlLabel
+                key={col.key}
+                label={col.key}
+                control={
+                  <Checkbox checked={col.selected} name={col.key} onChange={handleChangeColCheckbox} />
+                } />
+            ))
+            }
+          </FormGroup>
+        </MenuItem>
+        {/* <MenuItem onClick={handleCloseMenu}>My account</MenuItem>
+        <MenuItem onClick={handleCloseMenu}>Logout</MenuItem> */}
+      </Menu>
+    </div>
+  )
 
-  const columns = [
-    { key: "id", component: "Id" },
-    { key: "name", component: "Name" },
-    { key: "matricule", component: "Matricule" },
-    { key: "age", component: "age" },
-    { key: "gender", component: "Gender" },
-    { key: "level", component: "Level" },
-    { key: "addIcon", component: AddStudent }
-  ]
-  //table functions 
+
+
+  //table functions-----------------------------------------------
 
   const iconClicked = (e) => {
     const elmtId = (e.target);
@@ -228,7 +364,7 @@ const DataTable = () => {
 
   useEffect(() => {
     setSearchedData(searchFunction(students, query))
-    setDataLength(searchedData.length)
+    setDataLength(searchedData.length) 
   }, [students, query])
 
   const SortByKey = (array) => {
@@ -264,101 +400,144 @@ const DataTable = () => {
     }
   }
 
-  //function for pagination
+  //function for pagination---------------------------------------
   const paginate = (dataList) => {
     return dataList.slice((pageIndex - 1) * numOfRecords, ((pageIndex - 1) * numOfRecords) + numOfRecords)
   }
 
+  //rendering functions-------------------------------------------
   const createBodyTr = (student) => {
+    let List = [];
+    tableColumnsDisplaying.forEach(({ key, component }, index) => {
+      if (key === "actions") {
+        List.push(<td key={index} className='icon-td' onClick={(e) => { iconClicked(e) }}>
+          {<EditIcon className='noLink' sx={iconStyles} />}
+          {<DeleteOutlineIcon className='noLink' sx={iconStyles} />}
+        </td>)
+      } else {
+        List.push(<td key={index}><span>{student[key]}</span></td>)
+      }
+
+      // return (
+      //   <tr key={student.id} data-id={student.id}>
+      //     <td><span>{student.id}</span></td>
+      //     <td><span>{student.name}</span></td>
+      //     <td><span>{student.matricule}</span></td>
+      //     <td><span>{student.age}</span></td>
+      //     <td><span>{student.gender}</span></td>
+      //     <td><span>{student.level}</span></td>
+      //     <td className='icon-td' onClick={(e) => {
+      //       iconClicked(e)
+      //     }
+      //     }>
+      //       {<EditIcon sx={iconStyles} />}
+      //       {<DeleteOutlineIcon sx={iconStyles} />}
+      //     </td>
+      //   </tr>)
+    })
+    return <tr key={student["id"]} data-id={student["id"]}>{List}</tr>
+  }
+
+
+  const createTableFooterRow = () => {
     return (
-      <tr key={student.id} data-id={student.id}>
-        <td><span>{student.id}</span></td>
-        <td><span>{student.name}</span></td>
-        <td><span>{student.matricule}</span></td>
-        <td><span>{student.age}</span></td>
-        <td><span>{student.gender}</span></td>
-        <td><span>{student.level}</span></td>
-        <td className='icon-td' onClick={(e) => {
-          iconClicked(e)
-        }
-        }>
-          {<EditIcon sx={iconStyles} />}
-          {<DeleteOutlineIcon sx={iconStyles} />}
-        </td>
-      </tr>)
+      <div  className='footer-div'> 
+        <span>
+            <span style={{ border: "1px solid black", borderRadius: "5px", padding: "8px" }}>{`page ${pageIndex} of ${Math.ceil(dataLength / numOfRecords)}`}</span>
+          </span>
+
+        <span>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "inline", marginBottom: "30px" }}>
+              {/* <InputLabel id="demo-simple-select-standard-label">{"rows"}</InputLabel> */}
+              <span>rows: </span>
+              <Select
+                labelId="demo-simple-select-standard-label"
+                id="demo-simple-select-standard"
+                value={numOfRecords.toString()}
+                onChange={(e) => {
+                  setNumOfRecords(parseInt(e.target.value))
+                }}
+                label="rows"
+              >
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={2}>2</MenuItem>
+              <MenuItem value={3}>3</MenuItem>
+              <MenuItem value={4}>4</MenuItem>
+              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={10}>10</MenuItem>
+            </Select>
+          </FormControl>
+        </span>
+
+        <span>
+          <span className='paginate-span' onClick={() => {
+            setPageIndex(1)
+          }}>
+            <KeyboardDoubleArrowLeftIcon />
+          </span>
+          <span className='paginate-span' onClick={() => {
+            pageIndex === 1 ? setPageIndex(1) : (setPageIndex(pageIndex - 1));
+          }}>
+            <KeyboardArrowLeftIcon />
+          </span>
+          <span className='paginate-span' onClick={() => {
+            pageIndex === Math.ceil(dataLength / numOfRecords) ? setPageIndex(Math.ceil(dataLength / numOfRecords)) : (setPageIndex(pageIndex + 1));
+          }}>
+            <KeyboardArrowRightIcon />
+          </span>
+          <span className='paginate-span' onClick={() => {
+            setPageIndex(Math.ceil(dataLength / numOfRecords))
+          }}>
+            <KeyboardDoubleArrowRightIcon />
+          </span>
+        </span>
+      </div>
+    )
+  }
+
+  const createTableHeaderComponentsRow = () => {
+    return (
+      <div className='header-div'>
+        {columnView}
+        {<span style={{ padding: "0px 5px" }}>{sortButton}</span>}
+        {<span>{AddButton}</span>}
+        {<span>{SearchBar}</span>}
+      </div>
+    )
+  }
+
+  const createHeaderTr = (column) => {
+    return <th key={column.key}>
+      {column.key}
+    </th>
   }
 
   return (
-    <div>
-      <table>
-        <thead>
-          <tr className='searchTr'>
-            <td></td><td></td><td></td><td></td><td></td>
-            <td>{SearchBar}</td>
-            <td style={{ textAlign: "left" }}>{sortButton}</td>
-          </tr>
-          <tr>
-            {columns.map((column) => (
-              <td key={column.key}>{column.component}</td>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {students && paginate(SortByKey(searchedData)).map(student => (
-            createBodyTr(student)
-          ))}
-          <tr>
-            <td></td><td></td><td></td><td></td>
-            <td>
-              <span style={{ border: "1px solid black", borderRadius: "5px", padding: "5px" }}>{`page ${pageIndex} of ${Math.ceil(dataLength / numOfRecords)}`}</span>
-            </td>
-            <td style={{ display: "flex", alignItems: "center" }}>
-              <span style={{ paddingBottom: "15%" }}>rows</span>
-              <FormControl variant="standard" sx={{ m: 1, minWidth: 120, display: "inline", marginBottom: "30px" }}>
-                <Select
-                  labelId="demo-simple-select-standard-label"
-                  id="demo-simple-select-standard"
-                  value={numOfRecords}
-                  onChange={(e) => {
-                    setPageIndex(1)
-                    setNumOfRecords(e.target.value)
-                  }}
-                  label="gender"
-                >
-                  <MenuItem value={1}>1</MenuItem>
-                  <MenuItem value={2}>2</MenuItem>
-                  <MenuItem value={3}>3</MenuItem>
-                  <MenuItem value={4}>4</MenuItem>
-                  <MenuItem value={5}>5</MenuItem>
-                  <MenuItem value={10}>10</MenuItem>
-                </Select>
-              </FormControl>
-            </td>
-            <td>
-              <span className='paginate-span' onClick={() => {
-                setPageIndex(1)
-              }}>
-                <KeyboardDoubleArrowLeftIcon />
-              </span>
-              <span className='paginate-span' onClick={() => {
-                pageIndex === 1 ? setPageIndex(1) : (setPageIndex(pageIndex - 1));
-              }}>
-                <KeyboardArrowLeftIcon />
-              </span>
-              <span className='paginate-span' onClick={() => {
-                pageIndex === Math.ceil(dataLength / numOfRecords) ? setPageIndex(Math.ceil(dataLength / numOfRecords)) : (setPageIndex(pageIndex + 1));
-              }}>
-                <KeyboardArrowRightIcon />
-              </span>
-              <span className='paginate-span' onClick={() => {
-                setPageIndex(Math.ceil(dataLength / numOfRecords))
-              }}>
-                <KeyboardDoubleArrowRightIcon />
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div className='main'>
+      <section className='header-section'>
+        {createTableHeaderComponentsRow()}
+      </section>
+      <section className='outer-wrapper'>
+        <div className='scroll-wrapper'>
+          <table>
+            <thead>
+              <tr>
+                {tableColumnsDisplaying.map((column) => (
+                  createHeaderTr(column)
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {students && paginate(SortByKey(searchedData)).map(student => (
+                createBodyTr(student)
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section className='footer-section'>
+        {createTableFooterRow()}
+      </section>
 
 
       {/* {the AddModal goes here} */}
